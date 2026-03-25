@@ -1,0 +1,25 @@
+# Java artifacts
+*.class
+*.jar
+
+# Data files
+*.csv
+*.db
+
+# Executables
+*.exe
+
+# Optional: common related ignores
+*.log
+*.tmp
+*.cache
+
+# Build directories (common in Java projects)
+target/
+build/
+out/
+
+# IDE files (optional)
+.idea/
+*.iml
+.vscode/
