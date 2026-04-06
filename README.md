@@ -90,10 +90,10 @@ Team Idli - Anjana and Rachana :)
 ## UI 
 1. Download JavaFX SDK from https://openjfx.io, extract it.
 2. Compile with JavaFX
-```bash
-javac --module-path "C:\javafx-sdk-26\lib" --add-modules javafx.controls,javafx.fxml -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" *.java
-```
+    ```bash
+    javac --module-path "C:\javafx-sdk-26\lib" --add-modules javafx.controls,javafx.fxml -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" *.java
+    ```
 3. Run UI
    ```bash
-   java --module-path "C:\javafx-sdk-26\lib" --add-modules javafx.controls,javafx.fxml -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" FakeImageUI
-   ```
+    java --module-path "C:\javafx-sdk-26\lib" --add-modules javafx.controls,javafx.fxml -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" FakeImageUI
+    ```
