@@ -64,6 +64,7 @@ Download these JAR files and place them in the project root:
 ```bash
 javac -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" *.java
 ```
+---
 
 ## Usage 
 1. Create 2 folders au/ and tp/
@@ -78,6 +79,8 @@ javac -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.
    java -cp ".;metadata-extractor-2.19.0.jar;sqlite-jdbc-3.51.3.0.jar;xmpcore-6.1.11.jar" Main predict test.jpg
    ```
    replace test.jpg with image you want to test
+
+---
 
 ## Contributors:
 Team Idli - Anjana and Rachana :)
