@@ -1,34 +1,54 @@
-import javax.imageio.ImageIO;
+//create hash of images using pixels
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import javax.imageio.ImageIO;
 
 public class ImageHash {
 
-    public static String computeHash(String path) throws Exception {
+    private static final int SIZE = 32;
 
-        BufferedImage img = ImageIO.read(new File(path));
+    public static long hash(File file) throws Exception {
+        BufferedImage img = ImageIO.read(file);
+        if (img == null) throw new Exception("Cannot read: " + file.getName());
+        return hash(img);
+    }
 
+    public static long hash(BufferedImage orig) {
         // Resize to 32x32
-        Image tmp = img.getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-        BufferedImage resized = new BufferedImage(32, 32, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage small = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = small.createGraphics();
+        g.drawImage(orig.getScaledInstance(SIZE, SIZE, Image.SCALE_SMOOTH), 0, 0, null);
+        g.dispose();
 
-        Graphics2D g2 = resized.createGraphics();
-        g2.drawImage(tmp, 0, 0, null);
-        g2.dispose();
+        // Grayscale pixels
+        int[] pixels = new int[SIZE * SIZE];
+        long sum = 0;
+        for (int y = 0; y < SIZE; y++)
+            for (int x = 0; x < SIZE; x++) {
+                int rgb = small.getRGB(x, y);
+                int gray = (((rgb>>16)&0xFF) + ((rgb>>8)&0xFF) + (rgb&0xFF)) / 3;
+                pixels[y*SIZE+x] = gray;
+                sum += gray;
+            }
 
-        int[] pixels = new int[32 * 32];
-        resized.getRaster().getPixels(0, 0, 32, 32, pixels);
-
-        double avg = 0;
-        for (int p : pixels) avg += p;
-        avg /= pixels.length;
-
-        StringBuilder hash = new StringBuilder();
-        for (int p : pixels) {
-            hash.append(p > avg ? "1" : "0");
+        // Average hash: 1 if pixel >= mean
+        long avg = sum / (SIZE * SIZE);
+        long hash = 0;
+        for (int i = 0; i < 64; i++) {   // use first 64 pixels for a 64-bit hash
+            if (pixels[i] >= avg) hash |= (1L << i);
         }
+        return hash;
+    }
 
-        return hash.toString();
+    // Hamming distance between two 64-bit hashes
+    public static int hamming(long a, long b) {
+        return Long.bitCount(a ^ b);
+    }
+
+    // Similarity 0–100%
+    public static double similarity(long a, long b) {
+        return (1.0 - hamming(a, b) / 64.0) * 100.0;
     }
 }

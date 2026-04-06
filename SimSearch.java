@@ -1,44 +1,23 @@
-import java.sql.*;
+//search for similar hash in db 
+
+import java.util.Map;
 
 public class SimSearch {
 
-    public static void find(String newHash) throws Exception {
-
-        Connection conn = DBHelper.connect();
-
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT image_name, hash FROM images");
-
-        String bestImage = "";
-        int bestDist = Integer.MAX_VALUE;
-
-        while (rs.next()) {
-
-            String dbHash = rs.getString("hash");
-
-            int dist = hamming(newHash, dbHash);
-
-            if (dist < bestDist) {
-                bestDist = dist;
-                bestImage = rs.getString("image_name");
-            }
-        }
-
-        System.out.println("Closest match: " + bestImage);
-        System.out.println("Distance: " + bestDist);
-
-        conn.close();
+    public static class Result {
+        public String name;
+        public double similarity;
+        public Result(String n, double s) { name = n; similarity = s; }
     }
 
-    static int hamming(String a, String b) {
-
-        int count = 0;
-
-        for (int i = 0; i < a.length(); i++) {
-            if (a.charAt(i) != b.charAt(i))
-                count++;
+    public static Result findClosest(long queryHash, Map<String, Long> db) {
+        String best = null;
+        int bestDist = Integer.MAX_VALUE;
+        for (Map.Entry<String, Long> e : db.entrySet()) {
+            int d = ImageHash.hamming(queryHash, e.getValue());
+            if (d < bestDist) { bestDist = d; best = e.getKey(); }
         }
-
-        return count;
+        if (best == null) return new Result("none", 0);
+        return new Result(best, ImageHash.similarity(queryHash, db.get(best)));
     }
 }

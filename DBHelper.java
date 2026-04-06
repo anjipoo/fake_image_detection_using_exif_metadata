@@ -1,46 +1,45 @@
+//insert into sqlite db
+
 import java.sql.*;
+import java.util.*;
 
 public class DBHelper {
 
-    // Connect to SQLite
-    public static Connection connect() throws Exception {
-        // Explicitly load SQLite JDBC driver
-        Class.forName("org.sqlite.JDBC");
-        return DriverManager.getConnection("jdbc:sqlite:mpj.db");
+    private static final String DB = "images.db";
+
+    static Connection connect() throws Exception {
+        return DriverManager.getConnection("jdbc:sqlite:" + DB);
     }
 
-    // Create table if it doesn't exist
-    public static void createTable() throws Exception {
+    public static void init() throws Exception {
+        try (Connection c = connect(); Statement s = c.createStatement()) {
+            s.execute("CREATE TABLE IF NOT EXISTS images (image_name TEXT PRIMARY KEY, hash INTEGER)");
+        }
+    }
 
-        Connection conn = connect();
+    public static void insert(String name, long hash) throws Exception {
+        try (Connection c = connect();
+             PreparedStatement ps = c.prepareStatement(
+                "INSERT OR REPLACE INTO images(image_name, hash) VALUES(?,?)")) {
+            ps.setString(1, name);
+            ps.setLong(2, hash);
+            ps.executeUpdate();
+        }
+    }
 
-        String sql = "CREATE TABLE IF NOT EXISTS images (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "image_name TEXT," +
-                "hash TEXT," +
-                "hasMake REAL," +
-                "hasModel REAL," +
-                "hasDateTime REAL," +
-                "hasGPS REAL," +
-                "hasSoftware REAL," +
-                "softwareIsEditor REAL," +
-                "metadataMissing REAL," +
-                "entropy REAL," +
-                "lap REAL," +
-                "edge REAL," +
-                "meanR REAL," +
-                "meanG REAL," +
-                "meanB REAL," +
-                "varR REAL," +
-                "varG REAL," +
-                "varB REAL," +
-                "label INTEGER" +
-                ");";
+    public static Map<String, Long> getAll() throws Exception {
+        Map<String, Long> map = new LinkedHashMap<>();
+        try (Connection c = connect();
+             ResultSet rs = c.createStatement().executeQuery("SELECT image_name, hash FROM images")) {
+            while (rs.next()) map.put(rs.getString(1), rs.getLong(2));
+        }
+        return map;
+    }
 
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql);
-
-        stmt.close();
-        conn.close();
+    public static int count() throws Exception {
+        try (Connection c = connect();
+             ResultSet rs = c.createStatement().executeQuery("SELECT COUNT(*) FROM images")) {
+            return rs.next() ? rs.getInt(1) : 0;
+        }
     }
 }
