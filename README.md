@@ -31,7 +31,7 @@ A Java-based system to detect whether an image is **Authentic or Tampered (Fake)
 ---
 
 ## Project Structure
-```
+`
 FakeImageDetector/
 │
 ├── Main.java
@@ -43,9 +43,9 @@ FakeImageDetector/
 ├── Explainability.java
 ├── SimSearch.java
 │
-├── model.csv # Trained mode
+├── model.csv # Trained model
 ├── README.md
-```
+`
 
 ---
 
